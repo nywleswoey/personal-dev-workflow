@@ -5,10 +5,11 @@ This repository practices **Spec-Driven Development**. These rules are non-negot
 ## The loop
 
 1. **Spec first.** No code change happens without a matching file in `specs/`. If one doesn't exist, create it (copy `specs/_template.md`) before touching any `.rs` file.
-2. **Acceptance criteria are Given/When/Then.** Each criterion must be testable and must map to at least one assertion in a test file named `vibe-board/tests/spec_NNNN_<slug>.rs`.
-3. **Tests before implementation.** Write the acceptance tests against the spec. They must fail. Only then write production code until they pass.
-4. **Traceability is mandatory.** Every spec file names its test file and its implementation entry points in a `## Traceability` section. Every test module starts with a comment linking back to its spec.
-5. **Mark status.** Specs carry `status: draft | in-progress | done` in frontmatter. Flip it as you move through the loop.
+2. **Check for conflicts.** Run `python3 scripts/spec_index.py`. If it reports overlaps with your draft spec, either narrow your `Traceability` or add the clashing spec to `supersedes:` and flip it to `superseded`. See `specs/README.md` § Conflicts.
+3. **Acceptance criteria are Given/When/Then.** Each criterion must be testable and must map to at least one assertion in a test file named `vibe-board/tests/spec_NNNN_<slug>.rs`.
+4. **Tests before implementation.** Write the acceptance tests against the spec. They must fail. Only then write production code until they pass.
+5. **Traceability is mandatory.** Every spec file names its test file and its implementation entry points in a `## Traceability` section. Every test module starts with a comment linking back to its spec.
+6. **Mark status.** Specs carry `status: draft | in-progress | done | superseded` in frontmatter. Flip it as you move through the loop.
 
 ## What NOT to do
 

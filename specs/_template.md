@@ -2,6 +2,11 @@
 id: NNNN
 title: <short title>
 status: draft
+# Optional — list of spec IDs this spec replaces. The superseded specs
+# should be flipped to status: superseded when this spec merges.
+supersedes: []
+# Optional — list of related spec IDs for cross-reference. Informational only.
+related: []
 ---
 
 ## Why
