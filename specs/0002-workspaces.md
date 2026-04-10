@@ -90,7 +90,7 @@ Archive is best-effort and idempotent. For each repo the workspace references, t
 Eight atomic commits move this spec from `in-progress` to `done`. Each ticks one box. Tests live in `vibe-board/tests/spec_0002_workspaces.rs` and start as `todo!()` panics — the red baseline.
 
 - [x] **Issue #1 — Scaffolding + red baseline.** Module shells, `0002_workspaces.sql`, `commit_check.rs` stub, `Cargo.toml` deps and bin target, `lib.rs`/`main.rs` wiring for `AppState.workspace_root`/`checker_path`, all 18 test stubs, status flipped to `in-progress`.
-- [ ] **Issue #2 — GET /workspaces empty list** (AC `ac_listing_empty`).
+- [x] **Issue #2 — GET /workspaces empty list** (AC `ac_listing_empty`).
 - [ ] **Issue #3 — POST single-repo happy path + hook installation** (AC `ac_create_single_repo`, `ac_hook_installed`).
 - [ ] **Issue #4 — Multi-repo + same-repo-two-workspaces + slug collision** (AC `ac_create_multi_repo`, `ac_two_workspaces_same_repo`, `ac_create_slug_collision`).
 - [ ] **Issue #5 — Creation validation 400s** (AC `ac_create_empty_name_or_repos`, `ac_create_invalid_name`, `ac_create_name_taken`, `ac_create_relative_path`, `ac_create_repo_invalid`, `ac_create_commit_check_missing`).

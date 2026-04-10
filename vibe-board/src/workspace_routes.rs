@@ -5,15 +5,17 @@
 // `build_router` in lib.rs so that compilation succeeds end-to-end.
 
 use askama::Template;
+use askama_axum::IntoResponse;
 use axum::{
     extract::{Path, State},
+    http::StatusCode,
     response::Response,
     routing::{get, post},
     Form, Router,
 };
 use serde::Deserialize;
 
-use crate::workspace::Workspace;
+use crate::workspace::{list_active_workspaces, Workspace};
 use crate::AppState;
 
 #[derive(Template)]
@@ -29,8 +31,14 @@ pub struct CreateWorkspaceForm {
     pub repos: Vec<String>,
 }
 
-pub async fn get_workspaces(State(_state): State<AppState>) -> Response {
-    todo!("issue #2: implement get_workspaces handler")
+pub async fn get_workspaces(State(state): State<AppState>) -> Response {
+    match list_active_workspaces(&state.pool).await {
+        Ok(workspaces) => WorkspacesTemplate { workspaces }.into_response(),
+        Err(e) => {
+            tracing::error!("failed to list workspaces: {e:?}");
+            (StatusCode::INTERNAL_SERVER_ERROR, "db error").into_response()
+        }
+    }
 }
 
 pub async fn post_workspace(

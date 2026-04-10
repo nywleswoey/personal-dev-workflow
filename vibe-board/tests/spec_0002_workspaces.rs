@@ -11,10 +11,20 @@
 use std::path::PathBuf;
 use std::process::Command;
 
+use axum::body::Body;
+use axum::http::{Request, StatusCode};
+use http_body_util::BodyExt;
 use sqlx::SqlitePool;
 use tempfile::TempDir;
+use tower::ServiceExt;
 
 use vibe_board::{build_router, db::init_pool};
+
+#[allow(dead_code)]
+async fn body_string(resp: axum::response::Response) -> String {
+    let bytes = resp.into_body().collect().await.unwrap().to_bytes();
+    String::from_utf8(bytes.to_vec()).unwrap()
+}
 
 #[allow(dead_code)]
 struct TestApp {
@@ -84,7 +94,28 @@ fn run_git(cwd: &std::path::Path, args: &[&str]) {
 // data-workspace-name attributes.
 #[tokio::test]
 async fn ac_listing_empty() {
-    todo!("issue #2: implement get_workspaces empty list");
+    let app = setup().await;
+    let resp = app
+        .router
+        .clone()
+        .oneshot(
+            Request::builder()
+                .uri("/workspaces")
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(resp.status(), StatusCode::OK);
+    let body = body_string(resp).await;
+    assert!(
+        body.contains("Active workspaces"),
+        "expected 'Active workspaces' heading, body was: {body}"
+    );
+    assert!(
+        !body.contains("data-workspace-name="),
+        "expected no data-workspace-name attributes, body was: {body}"
+    );
 }
 
 // =====================================================================

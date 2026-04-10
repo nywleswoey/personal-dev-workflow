@@ -95,9 +95,52 @@ pub async fn archive_workspace(
 }
 
 pub async fn list_active_workspaces(
-    _pool: &SqlitePool,
+    pool: &SqlitePool,
 ) -> Result<Vec<Workspace>, WorkspaceError> {
-    todo!("issue #2: implement list_active_workspaces")
+    let rows = sqlx::query(
+        "SELECT id, name FROM workspaces WHERE status = 'active' ORDER BY id",
+    )
+    .fetch_all(pool)
+    .await?;
+
+    let mut workspaces = Vec::with_capacity(rows.len());
+    for row in rows {
+        use sqlx::Row;
+        let id: i64 = row.get("id");
+        let name: String = row.get("name");
+
+        let repo_rows = sqlx::query(
+            "SELECT repo_path, repo_slug, worktree_path, branch_name \
+             FROM workspace_repos WHERE workspace_id = ? ORDER BY repo_slug",
+        )
+        .bind(id)
+        .fetch_all(pool)
+        .await?;
+
+        let repos = repo_rows
+            .into_iter()
+            .map(|r| {
+                let repo_path: String = r.get("repo_path");
+                let repo_slug: String = r.get("repo_slug");
+                let worktree_path: String = r.get("worktree_path");
+                let branch_name: String = r.get("branch_name");
+                WorkspaceRepo {
+                    repo_path: PathBuf::from(repo_path),
+                    repo_slug,
+                    worktree_path: PathBuf::from(worktree_path),
+                    branch_name,
+                }
+            })
+            .collect();
+
+        workspaces.push(Workspace {
+            id,
+            name,
+            status: WorkspaceStatus::Active,
+            repos,
+        });
+    }
+    Ok(workspaces)
 }
 
 pub fn install_worktree_hooks(
