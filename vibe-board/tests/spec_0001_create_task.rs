@@ -23,7 +23,11 @@ async fn setup() -> TestApp {
     let db_path = tmp.path().join("test.db");
     let url = format!("sqlite://{}?mode=rwc", db_path.display());
     let pool = init_pool(&url).await.expect("init pool");
-    let router = build_router(pool.clone());
+    // Spec 0001 doesn't touch workspaces, but build_router now requires
+    // workspace_root and checker_path (added by spec 0002 scaffolding).
+    // Pass throwaway values that this spec's tests will never reach.
+    let workspace_root = tmp.path().join("ws_unused");
+    let router = build_router(pool.clone(), workspace_root, None);
     TestApp { router, pool, _tmp: tmp }
 }
 

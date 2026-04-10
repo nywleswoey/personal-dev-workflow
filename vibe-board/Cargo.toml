@@ -3,6 +3,14 @@ name = "vibe-board"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "vibe-board"
+path = "src/main.rs"
+
+[[bin]]
+name = "vibe-board-commit-check"
+path = "src/bin/commit_check.rs"
+
 [dependencies]
 axum = { version = "0.7", features = ["macros"] }
 tokio = { version = "1", features = ["full"] }
@@ -14,6 +22,9 @@ tower = "0.5"
 tower-http = { version = "0.5", features = ["trace"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+regex = "1"
+which = "6"
+dirs = "5"
 
 [dev-dependencies]
 tempfile = "3"

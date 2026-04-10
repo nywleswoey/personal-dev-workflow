@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>vibe-board — workspaces</title>
+  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; }
+    h2 { font-size: 1rem; text-transform: uppercase; color: #555; }
+    ul.workspaces { list-style: none; padding: 0; }
+    ul.workspaces li { border: 1px solid #ddd; border-radius: 4px; padding: 0.5rem; margin: 0.25rem 0; }
+  </style>
+</head>
+<body>
+  <h1>vibe-board</h1>
+  <h2>Active workspaces</h2>
+  <ul class="workspaces">
+    {% for ws in workspaces %}
+    <li data-workspace-name="{{ ws.name }}" data-workspace-status="{{ ws.status.as_str() }}">
+      {{ ws.name }}
+    </li>
+    {% endfor %}
+  </ul>
+</body>
+</html>

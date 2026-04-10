@@ -1,5 +1,6 @@
 use std::error::Error;
 use std::net::SocketAddr;
+use std::path::PathBuf;
 
 use vibe_board::{build_router, db::init_pool};
 
@@ -24,12 +25,31 @@ async fn main() -> Result<(), Box<dyn Error>> {
         }
     }
 
+    let workspace_root = resolve_workspace_root();
+    std::fs::create_dir_all(&workspace_root).ok();
+    let checker_path = which::which("vibe-board-commit-check").ok();
+    if checker_path.is_none() {
+        tracing::warn!(
+            "vibe-board-commit-check not found on PATH; workspace creation will return 400"
+        );
+    }
+
     let pool = init_pool(&database_url).await?;
-    let app = build_router(pool);
+    let app = build_router(pool, workspace_root, checker_path);
 
     let addr: SocketAddr = "127.0.0.1:3000".parse()?;
     tracing::info!("listening on http://{addr}");
     let listener = tokio::net::TcpListener::bind(addr).await?;
     axum::serve(listener, app).await?;
     Ok(())
+}
+
+fn resolve_workspace_root() -> PathBuf {
+    if let Ok(p) = std::env::var("VIBE_BOARD_WORKSPACE_ROOT") {
+        return PathBuf::from(p);
+    }
+    dirs::data_dir()
+        .unwrap_or_else(|| PathBuf::from("."))
+        .join("vibe-board")
+        .join("workspaces")
 }
